@@ -128,8 +128,31 @@ function getScreenResolution(){
   }
 }
 
-console.log(getScreenResolution());
-callGeolocation();
+function setFakeCursorPadding(elemenet){
+    
+}
+
+
+function getElementPosition(element){
+  var rect = element.getBoundingClientRect();
+  console.log(rect.top, rect.right, rect.bottom, rect.left);
+  return{
+    top: rect.top,
+    right: rect.right,
+    left: rect.left,
+    bottom: rect.bottom
+  }
+}
+
+
+function convertRationToPixel(ratioX, ratioY, screenWidth, screenHeight){
+  return {
+    x: screenWidth / ratioX,
+    y: screenHeight / ratioY
+  }
+}
+
+getElementPosition(document.getElementById("fakeButton"));
+
 window.onmousemove = () => {
-  console.log(getCursorLocation());  
 }
