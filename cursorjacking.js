@@ -1,16 +1,15 @@
-var metaData = {
+var data = {
   chrome: {
     name: "chrome",
     confirmPosition: {
-      
+      ratioX: 4.5,
+      ratioY: 3.6 
     }
   },
 
   firefox: {
     name: "firefox",
     confirmPosition: {
-      ratioX: 4.5,
-      ratioY: 3.6 
     }
   },
 
@@ -132,7 +131,6 @@ function setFakeCursorPadding(elemenet){
     
 }
 
-
 function getElementPosition(element){
   var rect = element.getBoundingClientRect();
   console.log(rect.top, rect.right, rect.bottom, rect.left);
@@ -145,14 +143,23 @@ function getElementPosition(element){
 }
 
 
-function convertRationToPixel(ratioX, ratioY, screenWidth, screenHeight){
+function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
   return {
     x: screenWidth / ratioX,
     y: screenHeight / ratioY
   }
 }
 
-getElementPosition(document.getElementById("fakeButton"));
+// getElementPosition(document.getElementById("fakeButton"));
 
+// document.getElementById("fakeButton").style.left = $(window).width().replace("px", '');
+// document.getElementById("fakeButton").style.top = $(window).height();
+// console.log(parseInt(document.getElementById("fakeButton").style.left.replace("px", '')) + 100);
+
+
+window.onload = () => {
+  
+}
 window.onmousemove = () => {
+  
 }
