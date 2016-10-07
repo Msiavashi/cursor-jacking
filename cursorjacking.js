@@ -1,9 +1,9 @@
 var data = {
   chrome: {
     name: "chrome",
-    confirmPosition: {
-      ratioX: 4.5,
-      ratioY: 3.6 
+    geoConfirmPosition: {
+      x: 6,
+      y: 3 
     }
   },
 
@@ -97,10 +97,6 @@ var browser = (function(){
     return M.join(' ');
 })();
 
-function moveFakeCursor(realCursorPosition){
-  document.getElementById("fakeCursor").style.left = realCursorPosition.cursorX ;
-  document.getElementById("fakeCursor").style.top = realCursorPosition.cursorY;
-}
 
 function isCollision(element1, element2) {
 	var rect1 = element1.getBoundingClientRect();
@@ -120,17 +116,6 @@ function triggerGeoLocationOnCollision(rigidElement){
   }
 }
 
-function getScreenResolution(){
-  return {
-    width: $(window).width(), 
-    height:$(window).height() 
-  }
-}
-
-function setFakeCursorPadding(elemenet){
-    
-}
-
 function getElementPosition(element){
   var rect = element.getBoundingClientRect();
   console.log(rect.top, rect.right, rect.bottom, rect.left);
@@ -141,7 +126,6 @@ function getElementPosition(element){
     bottom: rect.bottom
   }
 }
-
 
 function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
   return {
@@ -156,10 +140,46 @@ function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
 // document.getElementById("fakeButton").style.top = $(window).height();
 // console.log(parseInt(document.getElementById("fakeButton").style.left.replace("px", '')) + 100);
 
+function px2cm(px) {
+  var d = $("<div/>").css({ position: 'absolute', top : '-1000cm', left : '-1000cm', height : '1000cm', width : '1000cm' }).appendTo('body');
+  var px_per_cm = d.height() / 1000;
+  d.remove();
+  return px / px_per_cm;
+}
+
+var setPadding = {
+  toLeft: (length) => {
+
+  },
+  toRight: (length) => {
+    
+  }
+}
+
+function getDiff(element, confirmLocation){
+  var elementCmPostionX = px2cm(getElementPosition(element).left);
+  var elementCmPositionY = px2cm(getElementPosition(element).top);
+  if (elementCmPostionX > confirmLocation.left){
+   setPadding.toRight( elementCmPostion - confirmLocation.left ); 
+  }
+  else {
+    setPadding.toLeft(confirmLocation.left - elementCmPostionX);
+  }
+}
+
+function moveFakeCursor(realCursorPosition){
+  document.getElementById("fakeCursor").style.left = px2cm(realCursorPosition.cursorX) ;
+  document.getElementById("fakeCursor").style.top = px2cm(realCursorPosition.cursorY);
+}
 
 window.onload = () => {
-  
+    
 }
+
+callGeolocation();
 window.onmousemove = () => {
-  
+  // console.log(getCursorLocation());
+  // console.log(getScreenResolution());
+
+  console.log(px2cm(getElementPosition(document.getElementById('fakeButton')).left));
 }
