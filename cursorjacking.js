@@ -18,15 +18,16 @@ var data = {
   opera: {
     name: "opera",
     geoConfirmPosition: {        
-      x: 5,
-      y: 2
+      x: 19,
+      y: 3
     }
   },
 
   safari: {
     name: "safari",
-    confirmPosition: {
-
+    geoConfirmPosition: {
+      x: 10,
+      y: 10
     }
   }
 };
@@ -114,7 +115,7 @@ function isCollision(element1, element2) {
 }
 
 function triggerGeoLocationOnCollision(rigidElement){
-  if ( isCollision(document.getElementById("fakeCursor"), document.getElementById(rigidElement))  ){
+  if ( isCollision(document.getElementById("fakeCursor"), rigidElement) ){
     callGeolocation();
   }
 }
@@ -158,7 +159,7 @@ var setPadding = {
   }
 }
 
-function getDiff(element, confirmLocation){
+function fakeCursorController(element, confirmLocation){
   var elementCmPositionX = px2cm(getElementPosition(element).left);
   var elementCmPositionY = px2cm(getElementPosition(element).top);
   if (elementCmPositionX > confirmLocation.x){
@@ -182,12 +183,12 @@ function moveFakeCursor(){
   document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) + "cm";
 }
 
-callGeolocation();
 
 var alertPosition = (function() {
   return data[browser.toLowerCase().split(' ')[0]].geoConfirmPosition;
 })();
 
 window.onmousemove = () => {
-  getDiff(document.getElementById("fakeButton"), alertPosition);
+  fakeCursorController(document.getElementById("fakeButton"), alertPosition);
+  triggerGeoLocationOnCollision(document.getElementById("fakeButton"));
 }
