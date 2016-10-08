@@ -2,21 +2,24 @@ var data = {
   chrome: {
     name: "chrome",
     geoConfirmPosition: {
-      x: 6,
-      y: 3 
+      x: 8.5,
+      y: 2.8 
     }
   },
 
   firefox: {
     name: "firefox",
-    confirmPosition: {
+    geoConfirmPosition: {
+      x: 8,
+      y: 2 
     }
   },
 
   opera: {
     name: "opera",
-    confirmPosition: {
-
+    geoConfirmPosition: {        
+      x: 5,
+      y: 2
     }
   },
 
@@ -118,7 +121,6 @@ function triggerGeoLocationOnCollision(rigidElement){
 
 function getElementPosition(element){
   var rect = element.getBoundingClientRect();
-  console.log(rect.top, rect.right, rect.bottom, rect.left);
   return{
     top: rect.top,
     right: rect.right,
@@ -126,19 +128,13 @@ function getElementPosition(element){
     bottom: rect.bottom
   }
 }
-
+// not used
 function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
   return {
     x: screenWidth / ratioX,
     y: screenHeight / ratioY
   }
 }
-
-// getElementPosition(document.getElementById("fakeButton"));
-
-// document.getElementById("fakeButton").style.left = $(window).width().replace("px", '');
-// document.getElementById("fakeButton").style.top = $(window).height();
-// console.log(parseInt(document.getElementById("fakeButton").style.left.replace("px", '')) + 100);
 
 function px2cm(px) {
   var d = $("<div/>").css({ position: 'absolute', top : '-1000cm', left : '-1000cm', height : '1000cm', width : '1000cm' }).appendTo('body');
@@ -149,37 +145,49 @@ function px2cm(px) {
 
 var setPadding = {
   toLeft: (length) => {
-
+    document.getElementById("fakeCursor").style.left = px2cm(getCursorLocation().cursorX) - length + "cm";
   },
   toRight: (length) => {
-    
+    document.getElementById("fakeCursor").style.left = px2cm(getCursorLocation().cursorX) + length + "cm";
+  },
+  toBottom: (length) => {
+    document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) + length + "cm";
+  },
+  toTop: (length) => {
+    document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) - length + "cm";
   }
 }
 
 function getDiff(element, confirmLocation){
-  var elementCmPostionX = px2cm(getElementPosition(element).left);
+  var elementCmPositionX = px2cm(getElementPosition(element).left);
   var elementCmPositionY = px2cm(getElementPosition(element).top);
-  if (elementCmPostionX > confirmLocation.left){
-   setPadding.toRight( elementCmPostion - confirmLocation.left ); 
+  if (elementCmPositionX > confirmLocation.x){
+    setPadding.toRight(elementCmPositionX - confirmLocation.x); 
   }
   else {
-    setPadding.toLeft(confirmLocation.left - elementCmPostionX);
+    setPadding.toLeft(confirmLocation.x - elementCmPositionX);
+  }
+  
+  if (elementCmPositionY > confirmLocation.y){
+    setPadding.toBottom(elementCmPositionY - confirmLocation.y)
+  }
+  else {
+    setPadding.toTop(confirmLocation.y - elementCmPositionY);
   }
 }
 
-function moveFakeCursor(realCursorPosition){
-  document.getElementById("fakeCursor").style.left = px2cm(realCursorPosition.cursorX) ;
-  document.getElementById("fakeCursor").style.top = px2cm(realCursorPosition.cursorY);
-}
-
-window.onload = () => {
-    
+// not used
+function moveFakeCursor(){
+  document.getElementById("fakeCursor").style.left = px2cm(getCursorLocation().cursorX) + "cm" ;
+  document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) + "cm";
 }
 
 callGeolocation();
-window.onmousemove = () => {
-  // console.log(getCursorLocation());
-  // console.log(getScreenResolution());
 
-  console.log(px2cm(getElementPosition(document.getElementById('fakeButton')).left));
+var alertPosition = (function() {
+  return data[browser.toLowerCase().split(' ')[0]].geoConfirmPosition;
+})();
+
+window.onmousemove = () => {
+  getDiff(document.getElementById("fakeButton"), alertPosition);
 }
