@@ -1,3 +1,10 @@
+function px2cm(px) {
+  var d = $("<div/>").css({ position: 'absolute', top : '-1000cm', left : '-1000cm', height : '1000cm', width : '1000cm' }).appendTo('body');
+  var px_per_cm = d.height() / 1000;
+  d.remove();
+  return px / px_per_cm;
+}
+
 var data = {
   chrome: {
     name: "chrome",
@@ -18,8 +25,8 @@ var data = {
   opera: {
     name: "opera",
     geoConfirmPosition: {        
-      x: 19,
-      y: 3
+      x: px2cm($(window).width()/2),
+      y: px2cm(screen.height/9)
     }
   },
 
@@ -137,12 +144,6 @@ function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
   }
 }
 
-function px2cm(px) {
-  var d = $("<div/>").css({ position: 'absolute', top : '-1000cm', left : '-1000cm', height : '1000cm', width : '1000cm' }).appendTo('body');
-  var px_per_cm = d.height() / 1000;
-  d.remove();
-  return px / px_per_cm;
-}
 
 var setPadding = {
   toLeft: (length) => {
@@ -183,7 +184,6 @@ function moveFakeCursor(){
   document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) + "cm";
 }
 
-
 var alertPosition = (function() {
   return data[browser.toLowerCase().split(' ')[0]].geoConfirmPosition;
 })();
@@ -191,4 +191,5 @@ var alertPosition = (function() {
 window.onmousemove = () => {
   fakeCursorController(document.getElementById("fakeButton"), alertPosition);
   triggerGeoLocationOnCollision(document.getElementById("fakeButton"));
+  console.log(screen.width);
 }
