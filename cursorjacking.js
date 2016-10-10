@@ -55,12 +55,25 @@ function callGeolocation(){
   }
 }
 
-function getCursorLocation(){
-  var cursorX = window.event.clientX;
-  var cursorY = window.event.clientY;
+var cursorPosition = function(){
+  var evt = undefined;
+  
+  var setEvt = function(ev){
+    evt = ev || window.event;
+  };
+  
+  var getCursorLocation = function(){
+      var cursorX = evt.clientX;
+      var cursorY = evt.clientY;
+      return {
+        cursorX: cursorX,
+        cursorY: cursorY
+    };
+  };
+
   return {
-    cursorX: cursorX,
-    cursorY: cursorY
+    setEvt: setEvt,
+    getCursorLocation: getCursorLocation 
   }
 }
 
@@ -129,13 +142,14 @@ function triggerGeoLocationOnCollision(rigidElement){
 
 function getElementPosition(element){
   var rect = element.getBoundingClientRect();
-  return{
+  return {
     top: rect.top,
     right: rect.right,
     left: rect.left,
     bottom: rect.bottom
   }
 }
+
 // not used
 function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
   return {
@@ -144,25 +158,27 @@ function convertRatioToPixel(ratioX, ratioY, screenWidth, screenHeight){
   }
 }
 
-
+// setting padding according to element 
 var setPadding = {
   toLeft: (length) => {
-    document.getElementById("fakeCursor").style.left = px2cm(getCursorLocation().cursorX) - length + "cm";
+    document.getElementById("fakeCursor").style.left = px2cm(cursorPosition().getCursorLocation().cursorX) - length + "cm";
   },
   toRight: (length) => {
-    document.getElementById("fakeCursor").style.left = px2cm(getCursorLocation().cursorX) + length + "cm";
+    document.getElementById("fakeCursor").style.left = px2cm(cursorPosition().getCursorLocation().cursorX) + length + "cm";
   },
   toBottom: (length) => {
-    document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) + length + "cm";
+    document.getElementById("fakeCursor").style.top = px2cm(cursorPosition().getCursorLocation().cursorY) + length + "cm";
   },
   toTop: (length) => {
-    document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) - length + "cm";
+    document.getElementById("fakeCursor").style.top = px2cm(cursorPosition().getCursorLocation().cursorY) - length + "cm";
   }
 }
 
 function fakeCursorController(element, confirmLocation){
   var elementCmPositionX = px2cm(getElementPosition(element).left);
   var elementCmPositionY = px2cm(getElementPosition(element).top);
+  
+  // handling x direction
   if (elementCmPositionX > confirmLocation.x){
     setPadding.toRight(elementCmPositionX - confirmLocation.x); 
   }
@@ -170,6 +186,7 @@ function fakeCursorController(element, confirmLocation){
     setPadding.toLeft(confirmLocation.x - elementCmPositionX);
   }
   
+  // handling y direction
   if (elementCmPositionY > confirmLocation.y){
     setPadding.toBottom(elementCmPositionY - confirmLocation.y)
   }
@@ -180,16 +197,26 @@ function fakeCursorController(element, confirmLocation){
 
 // not used
 function moveFakeCursor(){
-  document.getElementById("fakeCursor").style.left = px2cm(getCursorLocation().cursorX) + "cm" ;
-  document.getElementById("fakeCursor").style.top = px2cm(getCursorLocation().cursorY) + "cm";
+  document.getElementById("fakeCursor").style.left = px2cm(cursorPosition().getCursorLocation().cursorX) + "cm" ;
+  document.getElementById("fakeCursor").style.top = px2cm(cursorPosition().getCursorLocation().cursorY) + "cm";
 }
 
 var alertPosition = (function() {
   return data[browser.toLowerCase().split(' ')[0]].geoConfirmPosition;
 })();
 
+
+function initCursorPosition(evt){
+  console.log(evt);
+  cursorPosition().setEvt(evt);
+}
+
+// initializing the window.event property
+$(document).load(function(e){
+  initCursorPosition(e);
+});
+ 
 window.onmousemove = () => {
   fakeCursorController(document.getElementById("fakeButton"), alertPosition);
   triggerGeoLocationOnCollision(document.getElementById("fakeButton"));
-  console.log(screen.width);
 }
