@@ -10,10 +10,11 @@ you only have to change config variable:
 
 1_ set triggerElement the id of the button you what to fire the geolocation call 
 
-2_change the serverIp to your the ip serving the js file .
+2_change the serverIp to the ip serving the js file .
 
 
 
 
 Regards,
+
 Mohammad
